@@ -1,0 +1,74 @@
+#summary A few examples.
+#labels Phase-Support
+
+= Introduction =
+
+These are a few examples of simple iterators created using the _yield_ feature. These are implemented by having a static method in a utility class, which supplies iterators for different needs.
+
+== Filtering Iterator ==
+
+{{{
+
+public interface Predicate<T> {
+  boolean evaluate(T item);
+}
+
+public static <T> Iterable<T> filteredIterable(Iterable<T> it, Predicate<T> pred) {
+  return new Yielder<T>() {
+    public void yieldNextCore() {
+      for (T item : it) {
+        if (pred.evaluate(item)) {
+          yieldReturn(item);
+        }
+      }
+  };
+}
+}}}
+
+== Transforming Iterator ==
+
+{{{
+
+public interface Transformation<T, K> {
+  K transform(T item);
+}
+
+public static <T, K> Iterable<K> transformedIterable(Iterable<T> it, Transformation<T, K> trans) {
+  return new Yielder<T>() {
+    public void yieldNextCore() {
+      for (T item : it) {
+        yieldReturn(trans.transform(item));
+      }
+  };
+}
+
+== DFS on a Graph ==
+
+public interface GraphNode {
+  Iterable<GraphNode> getNeighbours();
+}
+
+class NotInCollection<T> implements Predicate<T> {
+  private Collection<T> coll;
+  public NotInCollection(Collection<T> coll) { 
+    this.coll = coll;
+  }
+
+  public boolean evaluate(T item) {
+    return !coll.contains(item);
+  }
+}
+
+public static Iterable<GraphNode> depthFirstSearch(GraphNode graph) {
+  return dfsCore(graph, new HashSet<GraphNode>());
+}
+
+private static iterable<GraphNode> dfsCore(GraphNode node, Collection<GraphNode> visited) {
+  yieldReturn(node);
+  visited.add(node);
+  for (GraphNode neighbour : filteredIterable(node.getNeighbours(), new NotInCollection(visited))) {
+    for (GraphNode yieldedNeighbour : dfsCore(neighbour, visited)) {
+      yieldReturn(yieldedNeighbour);
+    }
+  }
+}

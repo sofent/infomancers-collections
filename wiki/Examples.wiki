@@ -55,7 +55,7 @@ public static Iterable<GraphNode> depthFirstSearch(GraphNode graph) {
 }
 
 private static Iterable<GraphNode> dfsCore(GraphNode node, Collection<GraphNode> visited) {
-  return new Yielder<T>() {
+  return new Yielder<GraphNode>() {
             protected void yieldNextCore() {
                 if (visited.contains(node)) {
                     yieldBreak();

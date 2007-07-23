@@ -41,9 +41,11 @@ public static <T, K> Iterable<K> transformedIterable(Iterable<T> it, Transformat
       }
   };
 }
+}}}
 
 == DFS on a Graph ==
 
+{{{
 public interface GraphNode {
   Iterable<GraphNode> getNeighbours();
 }
@@ -72,3 +74,4 @@ private static Iterable<GraphNode> dfsCore(GraphNode node, Collection<GraphNode>
             }
   };
 }
+}}}

@@ -63,12 +63,17 @@ public static Iterable<GraphNode> depthFirstSearch(GraphNode graph) {
   return dfsCore(graph, new HashSet<GraphNode>());
 }
 
-private static iterable<GraphNode> dfsCore(GraphNode node, Collection<GraphNode> visited) {
-  yieldReturn(node);
-  visited.add(node);
-  for (GraphNode neighbour : filteredIterable(node.getNeighbours(), new NotInCollection(visited))) {
-    for (GraphNode yieldedNeighbour : dfsCore(neighbour, visited)) {
-      yieldReturn(yieldedNeighbour);
+private static Iterable<GraphNode> dfsCore(GraphNode node, Collection<GraphNode> visited) {
+  return new Yielder<T>() {
+    public void yieldNextCore() {
+      yieldReturn(node);
+      visited.add(node);
+        for (GraphNode neighbour : filteredIterable(node.getNeighbours(), new NotInCollection(visited))) {
+          for (GraphNode yieldedNeighbour : dfsCore(neighbour, visited)) {
+            yieldReturn(yieldedNeighbour);
+          }
+        }
+      }
     }
-  }
+  };
 }

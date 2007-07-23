@@ -48,32 +48,27 @@ public interface GraphNode {
   Iterable<GraphNode> getNeighbours();
 }
 
-class NotInCollection<T> implements Predicate<T> {
-  private Collection<T> coll;
-  public NotInCollection(Collection<T> coll) { 
-    this.coll = coll;
-  }
-
-  public boolean evaluate(T item) {
-    return !coll.contains(item);
-  }
-}
-
 public static Iterable<GraphNode> depthFirstSearch(GraphNode graph) {
   return dfsCore(graph, new HashSet<GraphNode>());
 }
 
 private static Iterable<GraphNode> dfsCore(GraphNode node, Collection<GraphNode> visited) {
   return new Yielder<T>() {
-    public void yieldNextCore() {
-      yieldReturn(node);
-      visited.add(node);
-        for (GraphNode neighbour : filteredIterable(node.getNeighbours(), new NotInCollection(visited))) {
-          for (GraphNode yieldedNeighbour : dfsCore(neighbour, visited)) {
-            yieldReturn(yieldedNeighbour);
-          }
-        }
-      }
-    }
+            protected void yieldNextCore() {
+                if (visited.contains(node)) {
+                    yieldBreak();
+                }
+                
+                yieldReturn(node);
+
+                visited.add(node);
+
+                // Now, let's iterate the neighbours and recursively call DFS.
+                for (Object neighbour :node.getNeighbours()) {
+                    for (Object yieldedNeighbour : dfsCore(neighbour, visited)) {
+                        yieldReturn(yieldedNeighbour);
+                    }
+                }
+            }
   };
 }
